@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class Day11 {
 
@@ -72,6 +71,114 @@ public class Day11 {
         return (i >= 0 && i < currentMatrix.length) && (j >= 0 && j < currentMatrix[0].length);
     }
 
+    public static int occupiedAndSeen(int i, int j){
+
+        int occupied = 0, row = i, column = j;
+
+        //-,-
+        while (validIndex(--row, --column)){
+            if(currentMatrix[row][column] == 1){
+                break;
+            }else if (currentMatrix[row][column] == 2){
+                occupied++;
+                break;
+            }
+        }
+
+        //-, same
+        row = i;
+        column = j;
+
+        while (validIndex(--row, column)){
+            if(currentMatrix[row][column] == 1){
+                break;
+            }else if (currentMatrix[row][column] == 2){
+                occupied++;
+                break;
+            }
+        }
+
+        //-, +
+        row = i;
+        column = j;
+
+        while (validIndex(--row, ++column)){
+            if(currentMatrix[row][column] == 1){
+                break;
+            }else if (currentMatrix[row][column] == 2){
+                occupied++;
+                break;
+            }
+        }
+
+        //+, -
+        row = i;
+        column = j;
+
+        while (validIndex(++row, --column)){
+            if(currentMatrix[row][column] == 1){
+                break;
+            }else if (currentMatrix[row][column] == 2){
+                occupied++;
+                break;
+            }
+        }
+
+        //+, same
+        row = i;
+        column = j;
+
+        while (validIndex(++row, column)){
+            if(currentMatrix[row][column] == 1){
+                break;
+            }else if (currentMatrix[row][column] == 2){
+                occupied++;
+                break;
+            }
+        }
+
+        //+, +
+        row = i;
+        column = j;
+
+        while (validIndex(++row, ++column)){
+            if(currentMatrix[row][column] == 1){
+                break;
+            }else if (currentMatrix[row][column] == 2){
+                occupied++;
+                break;
+            }
+        }
+
+        //same, -
+        row = i;
+        column = j;
+
+        while (validIndex(row, --column)){
+            if(currentMatrix[row][column] == 1){
+                break;
+            }else if (currentMatrix[row][column] == 2){
+                occupied++;
+                break;
+            }
+        }
+
+        //same, +
+        row = i;
+        column = j;
+
+        while (validIndex(row, ++column)){
+            if(currentMatrix[row][column] == 1){
+                break;
+            }else if (currentMatrix[row][column] == 2){
+                occupied++;
+                break;
+            }
+        }
+        
+        return occupied;
+    }
+
     public static int adjacentOccupied(int i, int j){
 
         int occupied = 0;
@@ -119,7 +226,9 @@ public class Day11 {
         return occupied;
     }
 
-    public static int applyRules(){
+    public static long applyRules(String type){
+
+        readFile("/home/joan/dev/java/AdventCode/inputs/input_11.txt");
 
         tempMatrix = new int[currentMatrix.length][currentMatrix[0].length];
 
@@ -131,6 +240,7 @@ public class Day11 {
         }
 
         do{
+
             //Copy temp to current matrix
             for (int i = 0; i <currentMatrix.length; i++){
                 for (int j = 0; j < currentMatrix[i].length; j++){
@@ -141,16 +251,36 @@ public class Day11 {
             //Update temp, apply rules to current and save in temp
             for (int i = 0; i <currentMatrix.length; i++){
                 for (int j = 0; j < currentMatrix[i].length; j++){
-                    switch (currentMatrix[i][j]){
-                        case 1:
-                            if(adjacentOccupied(i, j) == 0){
-                                tempMatrix[i][j] = 2;
+
+                    switch (type){
+                        case "simple":
+                            switch (currentMatrix[i][j]){
+                                case 1:
+                                    if(adjacentOccupied(i, j) == 0){
+                                        tempMatrix[i][j] = 2;
+                                    }
+                                    break;
+                                case 2:
+                                    if(adjacentOccupied(i, j) >= 4){
+                                        tempMatrix[i][j] = 1;
+                                    }
+                                    break;
                             }
                             break;
-                        case 2:
-                            if(adjacentOccupied(i, j) >= 4){
-                                tempMatrix[i][j] = 1;
+                        case "complex":
+                            switch (currentMatrix[i][j]){
+                                case 1:
+                                    if(occupiedAndSeen(i, j) == 0){
+                                        tempMatrix[i][j] = 2;
+                                    }
+                                    break;
+                                case 2:
+                                    if(occupiedAndSeen(i, j) >= 5){
+                                        tempMatrix[i][j] = 1;
+                                    }
+                                    break;
                             }
+                            break;
                     }
                 }
             }
@@ -158,7 +288,7 @@ public class Day11 {
         }while (!equalMatrixes()); //Compare if current and temp are the same
 
         //Sum up the 2's in the matrix
-        int sum = 0;
+        long sum = 0;
         for (int[] list: currentMatrix){
             for (int number: list){
                 sum+= number == 2 ? 1 : 0;
@@ -169,8 +299,7 @@ public class Day11 {
     }
 
     public static void main(String[] args) {
-        readFile("/home/joan/dev/java/AdventCode/inputs/input_11.txt");
-
-        System.out.println(applyRules());
+        System.out.println("Occupied seats with simple rules: " + applyRules("simple"));
+        System.out.println("Occupied seats with complex rules: " + applyRules("complex"));
     }
 }
