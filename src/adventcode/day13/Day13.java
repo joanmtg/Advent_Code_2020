@@ -112,7 +112,6 @@ public class Day13 {
 
             for (Route route: routes) {
                 long tempTimestamp = timestamp + route.getPosition();
-                System.out.println(tempTimestamp);
 
                 long wait = Math.abs(route.getFrequency() - (tempTimestamp % route.getFrequency()));
                 wait = wait == route.getFrequency() ? 0 : wait;
@@ -142,8 +141,6 @@ public class Day13 {
 
         System.out.println(arrivalTime);
         System.out.println(busFrequencies);
-
-        Collections.sort(routes);
 
         System.out.println("Result Part 1: " + findWaitingTime());
         System.out.println("Earliest timestamp: " + findEarliestTimestamp());
